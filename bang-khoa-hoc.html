@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bảng Thông Tin Khoá Học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mg-color: #0ea5e9;
+    --mg-light: #e0f2fe;
+    --mg-dark: #0369a1;
+    --c1-color: #10b981;
+    --c1-light: #d1fae5;
+    --c1-dark: #065f46;
+    --c2-color: #8b5cf6;
+    --c2-light: #ede9fe;
+    --c2-dark: #4c1d95;
+    --c3-color: #f59e0b;
+    --c3-light: #fef3c7;
+    --c3-dark: #78350f;
+    --int-color: #ef4444;
+    --int-light: #fee2e2;
+    --int-dark: #7f1d1d;
+    --radius: 14px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #f4f6fb;
+    color: #1e293b;
+    padding: 28px 20px 40px;
+    min-height: 100vh;
+  }
+
+  /* ---- HEADER ---- */
+  .page-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .page-header h1 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  /* ---- SECTION ---- */
+  .section {
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .section-badge {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+  }
+  .section-desc {
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  /* ---- CARDS GRID ---- */
+  .cards {
+    display: grid;
+    gap: 12px;
+  }
+  .cards-2 { grid-template-columns: repeat(2, 1fr); }
+  .cards-3 { grid-template-columns: repeat(3, 1fr); }
+  .cards-4 { grid-template-columns: repeat(4, 1fr); }
+  .cards-5 { grid-template-columns: repeat(5, 1fr); }
+
+  /* ---- CARD ---- */
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid transparent;
+    position: relative;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.11);
+  }
+
+  .card-level {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .card-age {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 11.5px;
+    color: #475569;
+    line-height: 1.4;
+  }
+  .info-icon {
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 0px;
+  }
+
+  .price-block {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
+  }
+  .price-main {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .price-discount {
+    font-size: 11px;
+    color: #ef4444;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .price-note {
+    font-size: 10.5px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  /* Badge đặc biệt */
+  .badge-special {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- MẪU GIÁO ---- */
+  .mg .card { border-top-color: var(--mg-color); }
+  .mg .section-badge { background: var(--mg-light); color: var(--mg-dark); }
+  .mg .card-age { background: var(--mg-light); color: var(--mg-dark); }
+  .mg .price-main { color: var(--mg-dark); }
+
+  /* ---- CẤP 1 ---- */
+  .c1 .card { border-top-color: var(--c1-color); }
+  .c1 .section-badge { background: var(--c1-light); color: var(--c1-dark); }
+  .c1 .card-age { background: var(--c1-light); color: var(--c1-dark); }
+  .c1 .price-main { color: var(--c1-dark); }
+
+  /* ---- CẤP 2 ---- */
+  .c2 .card { border-top-color: var(--c2-color); }
+  .c2 .section-badge { background: var(--c2-light); color: var(--c2-dark); }
+  .c2 .card-age { background: var(--c2-light); color: var(--c2-dark); }
+  .c2 .price-main { color: var(--c2-dark); }
+  .c2 .badge-special { background: var(--c2-light); color: var(--c2-dark); }
+
+  /* ---- CẤP 3 IELTS ---- */
+  .c3 .card { border-top-color: var(--c3-color); }
+  .c3 .section-badge { background: var(--c3-light); color: var(--c3-dark); }
+  .c3 .card-age { background: var(--c3-light); color: var(--c3-dark); }
+  .c3 .price-main { color: var(--c3-dark); }
+
+  .int .card { border-top-color: var(--int-color); }
+  .int .card-age { background: var(--int-light); color: var(--int-dark); }
+  .int .price-main { color: var(--int-dark); }
+  .int .badge-special { background: var(--int-light); color: var(--int-dark); }
+
+  /* ---- IELTS SCORE BAR ---- */
+  .score-bar-wrap {
+    margin: 10px 0 4px;
+  }
+  .score-label {
+    font-size: 10px;
+    color: #94a3b8;
+    margin-bottom: 3px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .score-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2px;
+  }
+  .score-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  }
+  .score-range {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #78350f;
+    display: flex;
+    justify-content: space-between;
+  }
+  .score-arrow {
+    color: #94a3b8;
+    font-size: 10px;
+    padding: 0 4px;
+  }
+
+  /* ---- SHARED INFO TABLE (cấp 1 & 2) ---- */
+  .shared-info {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: #475569;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+  }
+  .shared-info .si-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .shared-info .si-icon { font-size: 14px; }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 10.5px;
+    color: #cbd5e1;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 700px) {
+    .cards-3, .cards-4, .cards-5 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .cards-2, .cards-3, .cards-4, .cards-5 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>📚 Thông tin các khoá học</h1>
+  <p>Chương trình tiếng Anh toàn diện từ Mẫu giáo đến IELTS</p>
+</div>
+
+<!-- ==================== MẪU GIÁO ==================== -->
+<div class="section mg">
+  <div class="section-title">
+    <span class="section-badge">🌱 Mẫu giáo</span>
+    <span class="section-desc">Giáo trình M-English · 120 buổi · 1.5 tiếng/buổi · 2 buổi/tuần</span>
+  </div>
+  <div class="cards cards-3">
+
+    <div class="card">
+      <div class="card-level" style="color:#0ea5e9">Green Level</div>
+      <span class="card-age">3 – 4 tuổi</span>
+      <div class="info-row"><span class="info-icon">📅</span> 120 buổi học</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 1.5 tiếng/buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">📖</span> Giáo trình M-English</div>
+      <div class="price-block">
+        <div class="price-main">20.000.000 ₫</div>
+        <div class="price-discount">💳 Đóng 1 lần đầu khoá: 18.000.000 ₫</div>
+        <div class="price-note">Có thể chia 2 lần · Hỗ trợ quẹt thẻ</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-level" style="color:#3b82f6">Blue Level</div>
+      <span class="card-age">4 – 5 tuổi</span>
+      <div class="info-row"><span class="info-icon">📅</span> 120 buổi học</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 1.5 tiếng/buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">📖</span> Giáo trình M-English</div>
+      <div class="price-block">
+        <div class="price-main">20.000.000 ₫</div>
+        <div class="price-discount">💳 Đóng 1 lần đầu khoá: 18.000.000 ₫</div>
+        <div class="price-note">Có thể chia 2 lần · Hỗ trợ quẹt thẻ</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-level" style="color:#d97706">Gold Level</div>
+      <span class="card-age">5 – 6 tuổi</span>
+      <div class="info-row"><span class="info-icon">📅</span> 120 buổi học</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 1.5 tiếng/buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">📖</span> Giáo trình M-English</div>
+      <div class="price-block">
+        <div class="price-main">20.000.000 ₫</div>
+        <div class="price-discount">💳 Đóng 1 lần đầu khoá: 18.000.000 ₫</div>
+        <div class="price-note">Có thể chia 2 lần · Hỗ trợ quẹt thẻ</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== CẤP 1 ==================== -->
+<div class="section c1">
+  <div class="section-title">
+    <span class="section-badge">🏫 Cấp 1</span>
+    <span class="section-desc">Lớp 1 → 5 · 9 tháng · 2 buổi/tuần · 2 tiếng/buổi</span>
+  </div>
+  <div class="shared-info">
+    <div class="si-item"><span class="si-icon">⏱</span> <span>2 tiếng/buổi · 2 buổi/tuần · 9 tháng</span></div>
+    <div class="si-item"><span class="si-icon">👩‍🏫</span> <span>1 buổi GV Việt Nam (ngữ pháp)</span></div>
+    <div class="si-item"><span class="si-icon">🌍</span> <span>1 buổi GV nước ngoài (speaking)</span></div>
+    <div class="si-item"><span class="si-icon">💰</span> <span><strong>13.600.000 ₫</strong>/khoá</span></div>
+  </div>
+  <div class="cards cards-5">
+    <div class="card"><div class="card-level" style="color:#10b981">Lớp 1</div><span class="card-age">Lớp 1</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card"><div class="card-level" style="color:#10b981">Lớp 2</div><span class="card-age">Lớp 2</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card"><div class="card-level" style="color:#10b981">Lớp 3</div><span class="card-age">Lớp 3</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card"><div class="card-level" style="color:#10b981">Lớp 4</div><span class="card-age">Lớp 4</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card"><div class="card-level" style="color:#10b981">Lớp 5</div><span class="card-age">Lớp 5</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+  </div>
+</div>
+
+<!-- ==================== CẤP 2 ==================== -->
+<div class="section c2">
+  <div class="section-title">
+    <span class="section-badge">📐 Cấp 2</span>
+    <span class="section-desc">Lớp 6 → 9 · 9 tháng · 2 buổi/tuần · 2 tiếng/buổi</span>
+  </div>
+  <div class="shared-info">
+    <div class="si-item"><span class="si-icon">⏱</span> <span>2 tiếng/buổi · 2 buổi/tuần · 9 tháng</span></div>
+    <div class="si-item"><span class="si-icon">👩‍🏫</span> <span>1 buổi GV Việt Nam (ngữ pháp)</span></div>
+    <div class="si-item"><span class="si-icon">🌍</span> <span>1 buổi GV nước ngoài (speaking)</span></div>
+    <div class="si-item"><span class="si-icon">💰</span> <span><strong>13.600.000 ₫</strong>/khoá</span></div>
+  </div>
+  <div class="cards cards-4">
+    <div class="card"><div class="card-level" style="color:#8b5cf6">Lớp 6</div><span class="card-age">Lớp 6</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card"><div class="card-level" style="color:#8b5cf6">Lớp 7</div><span class="card-age">Lớp 7</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card"><div class="card-level" style="color:#8b5cf6">Lớp 8</div><span class="card-age">Lớp 8</span><div class="info-row"><span class="info-icon">📅</span> 9 tháng</div><div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div><div class="price-block"><div class="price-main">13.600.000 ₫</div></div></div>
+    <div class="card c2" style="border-top-color:#8b5cf6; position:relative">
+      <span class="badge-special">⭐ Ôn thi vào 10</span>
+      <div class="card-level" style="color:#8b5cf6">Lớp 9</div>
+      <span class="card-age">Lớp 9</span>
+      <div class="info-row"><span class="info-icon">📅</span> 9 tháng</div>
+      <div class="info-row"><span class="info-icon">👩‍🏫</span> GV VN + GV nước ngoài</div>
+      <div class="info-row" style="color:#8b5cf6; font-weight:600"><span class="info-icon">🎯</span> Có ôn thi vào lớp 10</div>
+      <div class="price-block"><div class="price-main">13.600.000 ₫</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CẤP 3 / IELTS ==================== -->
+<div class="section c3">
+  <div class="section-title">
+    <span class="section-badge">🎓 Cấp 3 · IELTS</span>
+    <span class="section-desc">4 kỹ năng đầy đủ · 2 tiếng/buổi · 2 buổi/tuần (trừ lớp Intensive)</span>
+  </div>
+
+  <!-- Standard IELTS -->
+  <div class="cards cards-4" style="margin-bottom:12px">
+
+    <div class="card" style="border-top-color:#f59e0b">
+      <div class="card-level" style="color:#d97706">Beginner</div>
+      <span class="card-age" style="background:#fef3c7;color:#78350f">Đầu vào: 0</span>
+      <div class="score-bar-wrap">
+        <div class="score-label">IELTS Target</div>
+        <div class="score-bar"><div class="score-fill" style="width:50%"></div></div>
+        <div class="score-range"><span>0</span><span class="score-arrow">→</span><span style="color:#f59e0b">4.5</span></div>
+      </div>
+      <div class="info-row"><span class="info-icon">📅</span> 92 buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 2 tiếng/buổi · 4 kỹ năng</div>
+      <div class="price-block">
+        <div class="price-main">19.830.000 ₫</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top-color:#f59e0b">
+      <div class="card-level" style="color:#d97706">Higher Beginner</div>
+      <span class="card-age" style="background:#fef3c7;color:#78350f">Đầu vào: 3.0</span>
+      <div class="score-bar-wrap">
+        <div class="score-label">IELTS Target</div>
+        <div class="score-bar"><div class="score-fill" style="width:56%"></div></div>
+        <div class="score-range"><span>3.0</span><span class="score-arrow">→</span><span style="color:#f59e0b">5.0</span></div>
+      </div>
+      <div class="info-row"><span class="info-icon">📅</span> 92 buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 2 tiếng/buổi · 4 kỹ năng</div>
+      <div class="price-block">
+        <div class="price-main">19.830.000 ₫</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top-color:#f59e0b">
+      <div class="card-level" style="color:#d97706">Pre-Intermediate</div>
+      <span class="card-age" style="background:#fef3c7;color:#78350f">Đầu vào: 3.5</span>
+      <div class="score-bar-wrap">
+        <div class="score-label">IELTS Target</div>
+        <div class="score-bar"><div class="score-fill" style="width:61%"></div></div>
+        <div class="score-range"><span>3.5</span><span class="score-arrow">→</span><span style="color:#f59e0b">5.5</span></div>
+      </div>
+      <div class="info-row"><span class="info-icon">📅</span> 92 buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 2 tiếng/buổi · 4 kỹ năng</div>
+      <div class="price-block">
+        <div class="price-main">19.830.000 ₫</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top-color:#f59e0b">
+      <div class="card-level" style="color:#d97706">Intermediate</div>
+      <span class="card-age" style="background:#fef3c7;color:#78350f">Đầu vào: 4.5</span>
+      <div class="score-bar-wrap">
+        <div class="score-label">IELTS Target</div>
+        <div class="score-bar"><div class="score-fill" style="width:72%"></div></div>
+        <div class="score-range"><span>4.5</span><span class="score-arrow">→</span><span style="color:#f59e0b">6.5+</span></div>
+      </div>
+      <div class="info-row"><span class="info-icon">📅</span> 82 buổi · 2 buổi/tuần</div>
+      <div class="info-row"><span class="info-icon">⏱</span> 2 tiếng/buổi · 4 kỹ năng</div>
+      <div class="price-block">
+        <div class="price-main">19.830.000 ₫</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Intensive -->
+  <div class="cards cards-2 int">
+
+    <div class="card" style="border-top-color:#ef4444">
+      <span class="badge-special">⚡ INTENSIVE</span>
+      <div class="card-level" style="color:#dc2626">Intensive 1</div>
+      <span class="card-age" style="background:#fee2e2;color:#7f1d1d">Đầu vào: 5.5</span>
+      <div class="score-bar-wrap">
+        <div class="score-label">IELTS Target</div>
+        <div class="score-bar"><div class="score-fill" style="background:linear-gradient(90deg,#f87171,#ef4444); width:72%"></div></div>
+        <div class="score-range" style="color:#7f1d1d"><span>5.5</span><span class="score-arrow">→</span><span style="color:#ef4444">6.5+</span></div>
+      </div>
+      <div class="info-row"><span class="info-icon">📅</span> 48 buổi · <strong>3 buổi/tuần</strong></div>
+      <div class="info-row"><span class="info-icon">⏱</span> 2 tiếng/buổi · 4 kỹ năng</div>
+      <div class="info-row" style="color:#dc2626; font-weight:600"><span class="info-icon">🔥</span> Lịch học dày, nâng band nhanh</div>
+      <div class="price-block">
+        <div class="price-main" style="color:#7f1d1d">12.000.000 ₫</div>
+        <div class="price-note">48 buổi · ~4 tháng</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top-color:#ef4444">
+      <span class="badge-special">⚡ INTENSIVE</span>
+      <div class="card-level" style="color:#dc2626">Intensive 2</div>
+      <span class="card-age" style="background:#fee2e2;color:#7f1d1d">Đầu vào: 6.0</span>
+      <div class="score-bar-wrap">
+        <div class="score-label">IELTS Target</div>
+        <div class="score-bar"><div class="score-fill" style="background:linear-gradient(90deg,#f87171,#ef4444); width:78%"></div></div>
+        <div class="score-range" style="color:#7f1d1d"><span>6.0</span><span class="score-arrow">→</span><span style="color:#ef4444">7.0+</span></div>
+      </div>
+      <div class="info-row"><span class="info-icon">📅</span> 24 buổi · <strong>3 buổi/tuần</strong></div>
+      <div class="info-row"><span class="info-icon">⏱</span> 2 tiếng/buổi · 4 kỹ năng</div>
+      <div class="info-row" style="color:#dc2626; font-weight:600"><span class="info-icon">🎯</span> Luyện thi chuyên sâu, band cao</div>
+      <div class="price-block">
+        <div class="price-main" style="color:#7f1d1d">8.000.000 ₫</div>
+        <div class="price-note">24 buổi · ~2 tháng</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">© 2026 · Trung tâm Anh ngữ · Mọi thông tin học phí có thể thay đổi theo từng kỳ</div>
+
+</body>
+</html>
