@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quy Trình Học Phí</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #f8f7f4;
+    color: #1a1a1a;
+    padding: 24px 16px 32px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 20px;
+  }
+
+  /* ---- LEGEND ---- */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #555;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ---- LANES ---- */
+  .lanes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .lane {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.07);
+  }
+
+  .lane-header {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-align: center;
+  }
+
+  .lane-body {
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: #fff;
+  }
+
+  /* ---- CARDS ---- */
+  .step {
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.45;
+    position: relative;
+    border: 1px solid transparent;
+    cursor: default;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .step:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .step-sub {
+    font-size: 10.5px;
+    font-weight: 400;
+    margin-top: 2px;
+    opacity: 0.75;
+  }
+
+  /* Arrow between steps */
+  .arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* Phase divider */
+  .phase-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 6px;
+  }
+  .phase-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aaa;
+    white-space: nowrap;
+  }
+  .phase-line {
+    flex: 1;
+    height: 1px;
+    background: #e8e6e1;
+  }
+
+  /* Cross-lane arrow row */
+  .cross-row {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    margin: 2px 0;
+    position: relative;
+    height: 24px;
+  }
+  .cross-arrow {
+    font-size: 10px;
+    color: #bbb;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .cross-arrow-line {
+    flex: 1;
+    border-top: 1.5px dashed #ddd;
+    position: relative;
+  }
+  .cross-arrow-line::after {
+    content: '▶';
+    font-size: 7px;
+    color: #ccc;
+    position: absolute;
+    right: -6px;
+    top: -7px;
+  }
+
+  /* ---- COLORS ---- */
+
+  /* Teal – Phụ huynh */
+  .lane--ph .lane-header  { background: #0d9488; color: #fff; }
+  .lane--ph .lane-body    { background: #f0fdfa; }
+  .step--ph { background: #ccfbf1; border-color: #99f6e4; color: #134e4a; }
+
+  /* Purple – CSKH */
+  .lane--cskh .lane-header { background: #7c3aed; color: #fff; }
+  .lane--cskh .lane-body   { background: #faf5ff; }
+  .step--cskh { background: #ede9fe; border-color: #c4b5fd; color: #3b0764; }
+
+  /* Amber – Kế toán */
+  .lane--kt .lane-header  { background: #d97706; color: #fff; }
+  .lane--kt .lane-body    { background: #fffbeb; }
+  .step--kt { background: #fef3c7; border-color: #fde68a; color: #451a03; }
+
+  /* Alert / quá hạn */
+  .step--alert { background: #fff1f2; border-color: #fecdd3; color: #881337; }
+
+  /* ---- LOOP NOTE ---- */
+  .loop-note {
+    grid-column: 1 / -1;
+    background: #fff8f0;
+    border: 1px dashed #fcd34d;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 11px;
+    color: #92400e;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .loop-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    margin-top: 20px;
+    font-size: 10.5px;
+    color: #bbb;
+    text-align: center;
+  }
+
+  @media (max-width: 580px) {
+    .lanes { grid-template-columns: 1fr; }
+    .phase-divider { grid-column: 1; }
+    .cross-row { display: none; }
+    .loop-note { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<h1>📋 Quy trình thông báo – thu – đóng – nhắc nhở học phí</h1>
+<p class="subtitle">Áp dụng cho: CSKH · Kế toán · Phụ huynh</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#0d9488"></div> Phụ huynh</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div> CSKH</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div> Kế toán</div>
+</div>
+
+<div class="lanes">
+
+  <!-- ======== PHASE 1: THÔNG BÁO ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">1 · Thông báo học phí</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <!-- Phụ huynh col -->
+  <div class="lane lane--ph">
+    <div class="lane-header">👨‍👩‍👧 Phụ huynh</div>
+    <div class="lane-body">
+      <div class="step step--ph">
+        Nhận thông báo học phí
+        <div class="step-sub">Qua SMS / Zalo / Email</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSKH col -->
+  <div class="lane lane--cskh">
+    <div class="lane-header">🎧 CSKH</div>
+    <div class="lane-body">
+      <div class="step step--cskh">
+        Lập danh sách học sinh
+        <div class="step-sub">Theo chu kỳ tháng / học kỳ</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--cskh">
+        Soạn & gửi thông báo
+        <div class="step-sub">Nội dung, hạn đóng, số tiền</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kế toán col -->
+  <div class="lane lane--kt">
+    <div class="lane-header">🧾 Kế toán</div>
+    <div class="lane-body">
+      <div class="step step--kt">
+        Cung cấp dữ liệu học phí
+        <div class="step-sub">Biểu phí, chiết khấu, phụ thu</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== PHASE 2: THU PHÍ ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">2 · Đóng học phí</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ph">
+    <div class="lane-header">👨‍👩‍👧 Phụ huynh</div>
+    <div class="lane-body">
+      <div class="step step--ph">
+        Kiểm tra thông tin
+        <div class="step-sub">Số tiền, hạn đóng</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--ph">
+        Thực hiện đóng học phí
+        <div class="step-sub">Tiền mặt / Chuyển khoản / Ví điện tử</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--ph">
+        Thông báo đã đóng
+        <div class="step-sub">Gửi ảnh biên lai cho CSKH</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane lane--cskh">
+    <div class="lane-header">🎧 CSKH</div>
+    <div class="lane-body">
+      <div class="step step--cskh">
+        Tiếp nhận thanh toán
+        <div class="step-sub">Kiểm tra biên lai / xác minh GD</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--cskh">
+        Ghi nhận & chuyển kế toán
+        <div class="step-sub">Ghi log, kèm chứng từ</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane lane--kt">
+    <div class="lane-header">🧾 Kế toán</div>
+    <div class="lane-body">
+      <div class="step step--kt">
+        Xác nhận khoản thu
+        <div class="step-sub">Đối soát số liệu</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--kt">
+        Cập nhật sổ sách
+        <div class="step-sub">Ghi nhận doanh thu</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== PHASE 3: XÁC NHẬN & HÓA ĐƠN ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">3 · Xác nhận & xuất hóa đơn</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ph">
+    <div class="lane-header">👨‍👩‍👧 Phụ huynh</div>
+    <div class="lane-body">
+      <div class="step step--ph">
+        Nhận hóa đơn / biên lai
+        <div class="step-sub">Lưu làm bằng chứng đã đóng</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane lane--cskh">
+    <div class="lane-header">🎧 CSKH</div>
+    <div class="lane-body">
+      <div class="step step--cskh">
+        Chuyển hóa đơn tới phụ huynh
+        <div class="step-sub">Qua Zalo / Email / in ấn</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane lane--kt">
+    <div class="lane-header">🧾 Kế toán</div>
+    <div class="lane-body">
+      <div class="step step--kt">
+        Xuất hóa đơn VAT / biên lai
+        <div class="step-sub">Theo quy định thuế hiện hành</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--kt">
+        Gửi hóa đơn cho CSKH
+        <div class="step-sub">Để chuyển tiếp phụ huynh</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== PHASE 4: NHẮC NHỞ ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">4 · Nhắc nhở quá hạn</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ph">
+    <div class="lane-header">👨‍👩‍👧 Phụ huynh</div>
+    <div class="lane-body">
+      <div class="step step--alert">
+        Nhận nhắc nhở quá hạn
+        <div class="step-sub">SMS / Zalo / Gọi điện trực tiếp</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--ph">
+        Quay lại đóng học phí
+        <div class="step-sub">→ Lặp lại từ Bước 2</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane lane--cskh">
+    <div class="lane-header">🎧 CSKH</div>
+    <div class="lane-body">
+      <div class="step step--cskh">
+        Lọc danh sách chưa đóng
+        <div class="step-sub">Dựa trên báo cáo kế toán</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--cskh">
+        Gửi nhắc nhở đợt 1
+        <div class="step-sub">Nhẹ nhàng, kèm hạn đóng mới</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--cskh">
+        Gửi nhắc nhở đợt 2
+        <div class="step-sub">Nếu vẫn chưa đóng sau 3–5 ngày</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--alert">
+        Liên hệ trực tiếp
+        <div class="step-sub">Gọi điện hoặc gặp phụ huynh</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane lane--kt">
+    <div class="lane-header">🧾 Kế toán</div>
+    <div class="lane-body">
+      <div class="step step--kt">
+        Xuất báo cáo tồn đọng
+        <div class="step-sub">Định kỳ (hàng tuần / tháng)</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--kt">
+        Cung cấp cho CSKH
+        <div class="step-sub">DS học sinh chưa đóng + số tiền</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--kt">
+        Theo dõi công nợ
+        <div class="step-sub">Đến khi thanh toán đầy đủ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loop note -->
+  <div class="loop-note">
+    <span class="loop-note-icon">🔁</span>
+    <div>
+      <strong>Vòng lặp nhắc nhở:</strong> Sau khi phụ huynh đóng học phí muộn, quy trình quay về <strong>Giai đoạn 2 – Đóng học phí</strong> để CSKH tiếp nhận và kế toán xác nhận bình thường.
+    </div>
+  </div>
+
+</div><!-- /.lanes -->
+
+<div class="footer">Cập nhật lần cuối: tháng 4 / 2026 &nbsp;·&nbsp; Phòng CSKH &amp; Kế toán</div>
+
+</body>
+</html>
