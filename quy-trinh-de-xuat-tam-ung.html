@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quy Trình Đề Xuất – Tạm Ứng – Hoàn Ứng</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #f8f7f4;
+    color: #1a1a1a;
+    padding: 24px 16px 36px;
+  }
+
+  h1 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 3px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 18px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #666;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ---- LANES ---- */
+  .lanes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    align-items: start;
+  }
+
+  .lane {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.07);
+  }
+
+  .lane-header {
+    padding: 9px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .lane-body {
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ---- STEP CARDS ---- */
+  .step {
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    border: 1px solid transparent;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+  }
+  .step:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  }
+  .step-sub {
+    font-size: 10px;
+    font-weight: 400;
+    margin-top: 2px;
+    opacity: 0.72;
+  }
+
+  .arrow {
+    display: flex;
+    justify-content: center;
+    height: 20px;
+    align-items: center;
+    color: #ccc;
+    font-size: 13px;
+  }
+
+  /* ---- PHASE DIVIDERS ---- */
+  .phase-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 6px;
+  }
+  .phase-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #bbb;
+    white-space: nowrap;
+  }
+  .phase-line {
+    flex: 1;
+    height: 1px;
+    background: #e6e4df;
+  }
+
+  /* ---- REJECT NOTE ---- */
+  .reject-note {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    background: #fff5f5;
+    border: 1px dashed #fca5a5;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 10.5px;
+    color: #991b1b;
+    margin-top: 2px;
+  }
+
+  /* ---- LOOP NOTE ---- */
+  .loop-note {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    background: #fffbeb;
+    border: 1px dashed #fcd34d;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 10.5px;
+    color: #92400e;
+    margin-top: 4px;
+  }
+
+  /* ---- COLOR THEMES ---- */
+
+  /* Teal – Người đề xuất */
+  .lane--ndk .lane-header  { background: #0d9488; color: #fff; }
+  .lane--ndk .lane-body    { background: #f0fdfa; }
+  .step--ndk { background: #ccfbf1; border-color: #99f6e4; color: #134e4a; }
+
+  /* Purple – Quản lý */
+  .lane--ql .lane-header  { background: #7c3aed; color: #fff; }
+  .lane--ql .lane-body    { background: #faf5ff; }
+  .step--ql { background: #ede9fe; border-color: #c4b5fd; color: #3b0764; }
+
+  /* Amber – Kế toán */
+  .lane--kt .lane-header  { background: #d97706; color: #fff; }
+  .lane--kt .lane-body    { background: #fffbeb; }
+  .step--kt { background: #fef3c7; border-color: #fde68a; color: #451a03; }
+
+  /* Coral – BGĐ */
+  .lane--bgd .lane-header { background: #e05a2b; color: #fff; }
+  .lane--bgd .lane-body   { background: #fff5f0; }
+  .step--bgd { background: #ffe4d6; border-color: #fdba9e; color: #4a1b0c; }
+
+  /* Alert */
+  .step--alert { background: #fff1f2; border-color: #fecdd3; color: #881337; }
+  /* Success */
+  .step--done  { background: #f0fdf4; border-color: #bbf7d0; color: #14532d; }
+
+  /* Spacer placeholder (empty slot in grid) */
+  .empty { visibility: hidden; }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    margin-top: 20px;
+    font-size: 10px;
+    color: #ccc;
+    text-align: center;
+  }
+
+  @media (max-width: 620px) {
+    .lanes { grid-template-columns: 1fr 1fr; }
+    .phase-divider, .reject-note, .loop-note { grid-column: 1 / -1; }
+  }
+  @media (max-width: 380px) {
+    .lanes { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>📋 Quy trình đề xuất – báo giá – tạm ứng – hoàn ứng</h1>
+<p class="subtitle">Áp dụng khi mua sắm, sửa chữa hoặc phát sinh chi phí cần phê duyệt</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#0d9488"></div>Người đề xuất</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div>Quản lý</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>Kế toán</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e05a2b"></div>BGĐ / Duyệt</div>
+</div>
+
+<div class="lanes">
+
+  <!-- ======== HEADERS ======== -->
+  <div class="lane lane--ndk">
+    <div class="lane-header">👤 Người đề xuất</div>
+    <div class="lane-body" id="col-ndk"></div>
+  </div>
+  <div class="lane lane--ql">
+    <div class="lane-header">👔 Quản lý</div>
+    <div class="lane-body" id="col-ql"></div>
+  </div>
+  <div class="lane lane--kt">
+    <div class="lane-header">🧾 Kế toán</div>
+    <div class="lane-body" id="col-kt"></div>
+  </div>
+  <div class="lane lane--bgd">
+    <div class="lane-header">✅ BGĐ / Duyệt</div>
+    <div class="lane-body" id="col-bgd"></div>
+  </div>
+
+  <!-- ======== PHASE 1: ĐỀ XUẤT ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">Giai đoạn 1 · Đề xuất</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <!-- Row 1 -->
+  <div class="lane lane--ndk">
+    <div class="lane-body">
+      <div class="step step--ndk">
+        Tạo phiếu đề xuất
+        <div class="step-sub">Mô tả nhu cầu, lý do, ước tính chi phí</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--ql">
+    <div class="lane-body">
+      <div class="step step--ql">
+        Xem xét sơ bộ
+        <div class="step-sub">Đánh giá sự cần thiết &amp; tính hợp lệ</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--ql">
+        Quyết định hợp lệ?
+        <div class="step-sub">Chuyển tiếp hoặc từ chối có lý do</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--kt">
+    <div class="lane-body">
+      <div class="step step--kt">
+        Ghi nhận yêu cầu
+        <div class="step-sub">Vào sổ / hệ thống theo dõi</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--bgd" style="visibility:hidden">
+    <div class="lane-body"></div>
+  </div>
+
+  <div class="reject-note">
+    <span>↩</span>
+    <div><strong>Nếu từ chối:</strong> Quản lý ghi rõ lý do và trả phiếu về người đề xuất để điều chỉnh hoặc huỷ.</div>
+  </div>
+
+  <!-- ======== PHASE 2: BÁO GIÁ ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">Giai đoạn 2 · Báo giá</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ndk">
+    <div class="lane-body">
+      <div class="step step--ndk">
+        Liên hệ nhà cung cấp
+        <div class="step-sub">Tối thiểu 3 báo giá độc lập</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--ndk">
+        Lập bảng so sánh
+        <div class="step-sub">Giá, chất lượng, thời gian giao</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--ql">
+    <div class="lane-body">
+      <div class="step step--ql">
+        Xem xét &amp; chọn NCC
+        <div class="step-sub">Đề xuất nhà cung cấp tối ưu</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--kt">
+    <div class="lane-body">
+      <div class="step step--kt">
+        Kiểm tra ngân sách
+        <div class="step-sub">Đối chiếu với kế hoạch chi</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--bgd" style="visibility:hidden">
+    <div class="lane-body"></div>
+  </div>
+
+  <!-- ======== PHASE 3: PHÊ DUYỆT ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">Giai đoạn 3 · Phê duyệt</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ndk" style="visibility:hidden"><div class="lane-body"></div></div>
+  <div class="lane lane--ql">
+    <div class="lane-body">
+      <div class="step step--ql">
+        Trình hồ sơ lên BGĐ
+        <div class="step-sub">Kèm bảng so sánh báo giá</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--kt">
+    <div class="lane-body">
+      <div class="step step--kt">
+        Chuẩn bị tờ trình
+        <div class="step-sub">Tổng hợp số liệu, đề xuất mức chi</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--bgd">
+    <div class="lane-body">
+      <div class="step step--bgd">
+        Phê duyệt ngân sách
+        <div class="step-sub">Ký duyệt hồ sơ &amp; mức tạm ứng</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--bgd">
+        Kết quả phê duyệt
+        <div class="step-sub">Duyệt → tiếp tục / Không → trả lại</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reject-note">
+    <span>↩</span>
+    <div><strong>Nếu không duyệt:</strong> BGĐ ghi chú lý do, trả hồ sơ về quản lý và người đề xuất để xem xét lại phương án.</div>
+  </div>
+
+  <!-- ======== PHASE 4: TẠM ỨNG ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">Giai đoạn 4 · Tạm ứng</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ndk">
+    <div class="lane-body">
+      <div class="step step--ndk">
+        Điền phiếu tạm ứng
+        <div class="step-sub">Số tiền, mục đích, thời hạn hoàn</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--ndk">
+        Nhận tiền &amp; thực hiện
+        <div class="step-sub">Giữ toàn bộ hóa đơn, biên lai</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--ql">
+    <div class="lane-body">
+      <div class="step step--ql">
+        Ký phiếu tạm ứng
+        <div class="step-sub">Xác nhận hạn mức được duyệt</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--kt">
+    <div class="lane-body">
+      <div class="step step--kt">
+        Xuất tiền tạm ứng
+        <div class="step-sub">Tiền mặt / Chuyển khoản</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--kt">
+        Ghi sổ công nợ tạm ứng
+        <div class="step-sub">Theo dõi đến khi hoàn ứng</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--bgd" style="visibility:hidden"><div class="lane-body"></div></div>
+
+  <!-- ======== PHASE 5: HOÀN ỨNG ======== -->
+  <div class="phase-divider">
+    <span class="phase-label">Giai đoạn 5 · Hoàn ứng</span>
+    <div class="phase-line"></div>
+  </div>
+
+  <div class="lane lane--ndk">
+    <div class="lane-body">
+      <div class="step step--ndk">
+        Nộp hồ sơ hoàn ứng
+        <div class="step-sub">HĐ, biên lai, phiếu giao nhận</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--done">
+        Xác nhận hoàn tất
+        <div class="step-sub">Ký xác nhận &amp; đóng phiếu tạm ứng</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--ql">
+    <div class="lane-body">
+      <div class="step step--ql">
+        Xác nhận nghiệm thu
+        <div class="step-sub">Đã nhận hàng / hoàn thành dịch vụ</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--kt">
+    <div class="lane-body">
+      <div class="step step--kt">
+        Kiểm tra &amp; đối chiếu
+        <div class="step-sub">Chứng từ hợp lệ, đúng số tiền</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--kt">
+        Xử lý chênh lệch
+        <div class="step-sub">Hoàn trả dư / Thu bổ sung nếu thiếu</div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step step--done">
+        Đóng công nợ tạm ứng
+        <div class="step-sub">Ghi nhận quyết toán vào sổ sách</div>
+      </div>
+    </div>
+  </div>
+  <div class="lane lane--bgd">
+    <div class="lane-body">
+      <div class="step step--bgd">
+        Nhận báo cáo chi phí
+        <div class="step-sub">Tổng hợp theo kỳ / dự án</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-note">
+    <span>🔁</span>
+    <div>
+      <strong>Lưu ý chênh lệch hoàn ứng:</strong>
+      Nếu <em>chi ít hơn tạm ứng</em> → người đề xuất hoàn trả phần dư cho kế toán.
+      Nếu <em>chi nhiều hơn tạm ứng</em> → kế toán xuất bổ sung sau khi có chứng từ hợp lệ và được duyệt.
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Cập nhật tháng 4 / 2026 &nbsp;·&nbsp; Phòng Kế toán &amp; Hành chính</div>
+
+</body>
+</html>
